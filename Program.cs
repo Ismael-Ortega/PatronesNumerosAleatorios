@@ -54,6 +54,7 @@
                 //Console.Write("Agregue el numero: " + ri + " a la lista\n");
             }
             
+
             //for que muestra los numeros generados en xi
             Console.WriteLine("Los numeros generados son: ");
             foreach (int j in list)
@@ -62,12 +63,14 @@
             }
 
             //for que muestra los numeros generados en ri
-            Console.WriteLine("Los numeros ri son: ");
+            //Console.WriteLine("Los numeros ri son: ");
             foreach (double j in listRi)
             {
-                Console.WriteLine("ri indice " + listRi.IndexOf(j) + " con valor: " + j + "\n");
+                //Console.WriteLine("ri indice " + listRi.IndexOf(j) + " con valor: " + j + "\n");
             }
 
+            /**********MOSTRAMOS LOS RESULTADOS *******/
+            Console.Write("/****************** RESULTADOS *******************/\n");
             //metodo que busca repeticiones
             var result = list.GroupBy(x => x)
                             .Where(g => g.Count() > 1)
@@ -101,10 +104,15 @@
             {
                 Console.Write("El promedio esta dentro del intervalo\n");
                 Console.Write("Li: "+li+" Ls: "+ls+"\n");
+                Console.Write("\n");
+                Console.Write("Se acepta la hipotesis nula (H0)\n");
+                
+                
             }
             else
             {
                 Console.Write("El promedio esta fuera del intervalo\n");
+                Console.Write("El metodo no es aceptado\n");
             }
         }
     }
