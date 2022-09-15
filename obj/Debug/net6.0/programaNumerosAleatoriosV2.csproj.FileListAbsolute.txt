@@ -1,0 +1,15 @@
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\bin\Debug\net6.0\programaNumerosAleatoriosV2.exe
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\bin\Debug\net6.0\programaNumerosAleatoriosV2.deps.json
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\bin\Debug\net6.0\programaNumerosAleatoriosV2.runtimeconfig.json
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\bin\Debug\net6.0\programaNumerosAleatoriosV2.dll
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\bin\Debug\net6.0\programaNumerosAleatoriosV2.pdb
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.csproj.AssemblyReference.cache
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.AssemblyInfoInputs.cache
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.AssemblyInfo.cs
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.csproj.CoreCompileInputs.cache
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.dll
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\refint\programaNumerosAleatoriosV2.dll
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.pdb
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\programaNumerosAleatoriosV2.genruntimeconfig.cache
+C:\Users\ormoj\Documents\Semestre 5\Simulacion\programaNumerosAleatoriosV2\obj\Debug\net6.0\ref\programaNumerosAleatoriosV2.dll

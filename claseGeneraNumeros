@@ -1,0 +1,54 @@
+using System;
+using System.Collections.Generic;
+namespace programaNumerosAleatoriosV2
+{
+    public class claseGeneraNumeros
+    {
+        //constructor de la clase sin parametros
+        public claseGeneraNumeros()
+        {
+            
+        }
+
+        //Lista que generara numeros aleatorios
+        List<int> list = new List<int>() { 5, -1, 8, 4, 5, 9, -1, 8 };
+
+        float x0 = 6;
+        float xi = 0;
+        float k = 3;
+        float g = 13;
+        float c = 8191;
+        float a = 13;
+        float m = 10;
+
+        //for que genera los numeros aleatorios
+        public void generaNumerosAleatorios()
+        {
+            for (int i = 1; i < m; i++)
+            {
+                xi = (a * x0 + c) % m;
+                list.Add((int)xi);
+                Console.Write("Agregue el numero: " + xi + " a la lista");
+            }
+        }
+
+        public void muestraNumeros()
+        {
+            Console.WriteLine("Los numeros generados son: ");
+            foreach (int i in list)
+            {
+                Console.WriteLine(i);
+            }
+        }
+
+        public void buscaRepeticiones()
+        {
+            var result = list.GroupBy(x => x)
+                            .Where(g => g.Count() > 1)
+                            .Select(x => new { Element = x.Key, Count = x.Count() })
+                            .ToList();
+
+            Console.WriteLine(String.Join(", ", result));
+        }
+    }
+}
