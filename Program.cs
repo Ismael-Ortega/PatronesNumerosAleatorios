@@ -100,6 +100,7 @@
             if(promedio>li && promedio<ls)
             {
                 Console.Write("El promedio esta dentro del intervalo\n");
+                Console.Write("Li: "+li+" Ls: "+ls+"\n");
             }
             else
             {
