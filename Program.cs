@@ -12,7 +12,7 @@
 
             float x0 = 6;
             double xi = 0;
-            float k = 3;
+            float k = 15;
             float g = 13;
             float c = 8191;
             float a = 1 + 4 * k;
@@ -22,6 +22,9 @@
             //prueba de medias
             double suma = 0;
 
+            //para chi cuadrada
+            double gradosDeLibertad = 0;
+            double chiCuadrada = 0;
             /*
             
             m = 2^g
@@ -61,6 +64,9 @@
             {
                 Console.WriteLine("x indice "+list.IndexOf(j)+" con valor: "+j+"\n");
             } */
+            Console.WriteLine("x indice " + list.ElementAt(0) + " con valor: " + 0 + "\n");
+            Console.WriteLine("x indice " + list.ElementAt(1) + " con valor: " + 1 + "\n");
+
 
             //for que muestra los numeros generados en ri
             //Console.WriteLine("Los numeros ri son: ");
@@ -68,6 +74,9 @@
             {
                 //Console.WriteLine("ri indice " + listRi.IndexOf(j) + " con valor: " + j + "\n");
             }
+            Console.WriteLine("ri indice " + listRi.ElementAt(0) + " con valor: " + 0 + "\n");
+            Console.WriteLine("ri indice " + listRi.ElementAt(1) + " con valor: " + 1 + "\n");
+
 
             /**********MOSTRAMOS LOS RESULTADOS *******/
             Console.Write("/****************** RESULTADOS *******************/\n");
@@ -132,7 +141,9 @@
             double lsVarianza = 1;
 
             //calculamos el valor de chiCuadrada con alpha = 0.05 y m = 8192
-            double chiCuadrada = 0.9;
+            //grados de libertad
+            gradosDeLibertad = m - 1;
+            chiCuadrada = 0.5 * Math.Pow(1.96 + Math.Sqrt(2 * gradosDeLibertad - 1), 2);
 
             if (varianzaRi > liVarianza && varianzaRi < lsVarianza)
             {
@@ -206,6 +217,8 @@
             }
 
             //calculamos el valor de chi cuadrada
+            gradosDeLibertad = m2 - 1;
+            chiCuadrada = 0.5 * Math.Pow(1.96 + Math.Sqrt(2 * gradosDeLibertad - 1), 2);
 
             //si el valor de chi cuadrada es mayor que el valor de la sumatoria de la ecuacion
             //entonces se acepta la hipotesis nula
@@ -290,15 +303,15 @@
             //hacemos la validacion para revisar si la prueba es aceptada o no
             if (-z0_5 < z0 && z0 < z0_5)
             {
-                Console.Write("La prueba de corridas arriba y abajo de la media es aceptada\n");
+                Console.WriteLine("La prueba de corridas arriba y abajo de la media es aceptada\n");
             }
             else
             {
-                Console.Write("La prueba de corridas arriba y abajo de la media es rechazada\n");
+                Console.WriteLine("La prueba de corridas arriba y abajo de la media es rechazada\n");
             }
 
             /***********CALCULAMOS LA MEDIANA DE LOS VALORES DE LA LISTA RI*************/
-            Console.WriteLine("5.- CALCULAMOS LA MEDIANA DE LOS VALORES DE LA LISTA RI");
+            //Console.WriteLine("5.- CALCULAMOS LA MEDIANA DE LOS VALORES DE LA LISTA RI");
             //guardamos los valores de la lista Ri en una lista auxiliar
             List<double> listaAuxiliar = new List<double>();
             foreach (double item in listRi)
@@ -326,6 +339,105 @@
             double desviacionEstandarRi = Math.Sqrt(varianzaRi);
             Console.WriteLine("La desviacion estandar de los valores RI es: " + desviacionEstandarRi);
 
+            /***********PRUEBA DE 1 DADO*************/
+            //Obtenemos la prueba de dados con 1 dado y seran 10 corridas
+            int cantidadCorridas = 500;
+            for (int ordenCorrida = 0; ordenCorrida < cantidadCorridas; ordenCorrida += 50)
+            {
+                Console.WriteLine("\nCorrida en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50));
+                //obtenemos el ancho que tendra cada rango donde clasificaremos los numeros aleatorios
+                double anchoRango = 1.0 / 6.0;
+
+                //obtenemos la cantidad de numeros aleatorios que caeran en cada rango
+                //creamos una lista para guardar las listas que creamos para cada rango
+                List<List<double>> listaRangos = new List<List<double>>();
+                //creamos una lista auxiliar para guardar los numeros aleatorios que caen en cada rango
+                List<double> listaAuxiliarRangos = new List<double>();
+
+                //clasificaremos los primero 50 numeros aleatorios ri y luego de 51 al 100
+
+                //recorremos el dado del numero 1 al 6
+                for (int i = 0; i < 6; i++)
+                {
+                    //recorremos la lista de numeros aleatorios ri
+                    for (int j = 1 + ordenCorrida; j < 50 + ordenCorrida; j++)
+                    {
+                        //si el numero aleatorio ri cae en el rango
+                        if (listRi.ElementAt(j) >= (i * anchoRango) && listRi.ElementAt(j) < ((i + 1) * anchoRango))
+                        {
+                            //agregamos el numero aleatorio a la lista auxiliar
+                            listaAuxiliarRangos.Add(listRi.ElementAt(j));
+                        }
+                    }
+                    //agregamos la lista auxiliar a la lista de rangos
+                    listaRangos.Add(listaAuxiliarRangos);
+                    //limpiamos la lista auxiliar
+                    listaAuxiliarRangos = new List<double>();
+                }
+
+                //mostramos los numeros aleatorios que caen en cada rango
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    //Console.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
+                    //Listamos los numeros aleatorios que caen en cada rango
+                    foreach (double item in listaRangos.ElementAt(i))
+                    {
+                        //Console.WriteLine("El numero aleatorio " + item + " cae en el rango del numero del dado " + (i + 1));
+                        //Console.WriteLine(item);
+                    }
+                }
+
+                /************MEDIA, MEDIANA, VARIANZA Y DESVIACION ESTANDAR*********/
+
+                //calculamos media de los numeros aleatorios que caen en cada rango
+                double mediaRangos = 0;
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    mediaRangos += listaRangos.ElementAt(i).Count * (1 + i);
+                }
+                //Console.WriteLine("Numero de intervalos: " + listaRangos.Count);
+                mediaRangos = mediaRangos / 50;
+                Console.WriteLine("La media de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + mediaRangos);
+                //Obtenemos mediana
+                double medianaRangos = 0;
+                if (listaRangos.Count % 2 == 0)
+                {
+                    //si la cantidad de elementos es par
+                    medianaRangos = (listaRangos.ElementAt(listaRangos.Count / 2).Count + listaRangos.ElementAt((listaRangos.Count / 2) - 1).Count) / 2;
+                }
+                else
+                {
+                    //si la cantidad de elementos es impar
+                    medianaRangos = listaRangos.ElementAt(listaRangos.Count / 2).Count;
+                }
+                Console.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos);
+
+                //Calculamos moda
+                int modaRangos = 0;
+                int contadorModa = 0;
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    if (listaRangos.ElementAt(i).Count > contadorModa)
+                    {
+                        contadorModa = listaRangos.ElementAt(i).Count;
+                        modaRangos = i + 1;
+                    }
+                }
+                Console.WriteLine("La moda de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + modaRangos);
+
+                //Calculamos varianza
+                double varianzaRangos = 0;
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    varianzaRangos += Math.Pow((listaRangos.ElementAt(i).Count - mediaRangos), 2);
+                }
+                varianzaRangos = varianzaRangos / 50;
+                Console.WriteLine("La varianza de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + varianzaRangos);
+
+                //Calculamos desviacion estandar
+                double desviacionEstandarRangos = Math.Sqrt(varianzaRangos);
+                Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + desviacionEstandarRangos);
+            }
 
         }
     }
