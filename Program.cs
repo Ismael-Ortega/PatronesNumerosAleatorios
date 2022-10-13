@@ -1,4 +1,10 @@
-﻿namespace programaNumerosAleatoriosV2
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace programaNumerosAleatoriosV2
 {
     class Program
     {
@@ -9,6 +15,10 @@
 
             //Lista que genera los valores de ri
             List<double> listRi = new List<double>();
+
+            StreamWriter log;
+            log = new StreamWriter("C:/Users/ormoj/Documents/Semestre 5/Simulacion/programaNumerosAleatoriosV2/file.log");
+            log.AutoFlush = true;
 
             float x0 = 6;
             double xi = 0;
@@ -344,7 +354,15 @@
             int cantidadCorridas = 500;
             for (int ordenCorrida = 0; ordenCorrida < cantidadCorridas; ordenCorrida += 50)
             {
-                Console.WriteLine("\nCorrida en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50));
+                int rangoInf = 0;
+                int rangoSup = 0;
+                rangoInf = ordenCorrida+1;
+                rangoSup = ordenCorrida + 50;
+                if(rangoInf == 1){
+                    rangoInf = 0;
+                }
+
+                Console.WriteLine("\nCorrida en el rango de " + (rangoInf) + " a " + (rangoSup));
                 //obtenemos el ancho que tendra cada rango donde clasificaremos los numeros aleatorios
                 double anchoRango = 1.0 / 6.0;
 
@@ -360,7 +378,7 @@
                 for (int i = 0; i < 6; i++)
                 {
                     //recorremos la lista de numeros aleatorios ri
-                    for (int j = 1 + ordenCorrida; j < 50 + ordenCorrida; j++)
+                    for (int j = rangoInf; j < rangoSup; j++)
                     {
                         //si el numero aleatorio ri cae en el rango
                         if (listRi.ElementAt(j) >= (i * anchoRango) && listRi.ElementAt(j) < ((i + 1) * anchoRango))
@@ -378,7 +396,7 @@
                 //mostramos los numeros aleatorios que caen en cada rango
                 for (int i = 0; i < listaRangos.Count; i++)
                 {
-                    //Console.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
+                    Console.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
                     //Listamos los numeros aleatorios que caen en cada rango
                     foreach (double item in listaRangos.ElementAt(i))
                     {
@@ -397,20 +415,45 @@
                 }
                 //Console.WriteLine("Numero de intervalos: " + listaRangos.Count);
                 mediaRangos = mediaRangos / 50;
-                Console.WriteLine("La media de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + mediaRangos);
+                Console.WriteLine("La media de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + mediaRangos);
+                
                 //Obtenemos mediana
                 double medianaRangos = 0;
-                if (listaRangos.Count % 2 == 0)
+                //guardamos los numeros aleatorios en donde calcularemos la mediana
+                List<double> listaAuxiliarMediana = new List<double>();
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+                    {
+                        listaAuxiliarMediana.Add(listaRangos.ElementAt(i).ElementAt(j));
+                    }
+                }
+                //ordenamos la lista auxiliar
+                listaAuxiliarMediana.Sort();
+                //calculamos la mediana
+                if (listaAuxiliarMediana.Count % 2 == 0)
                 {
                     //si la cantidad de elementos es par
-                    medianaRangos = (listaRangos.ElementAt(listaRangos.Count / 2).Count + listaRangos.ElementAt((listaRangos.Count / 2) - 1).Count) / 2;
+                    medianaRangos = (listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2) + listaAuxiliarMediana.ElementAt((listaAuxiliarMediana.Count / 2) - 1)) / 2;
                 }
                 else
                 {
                     //si la cantidad de elementos es impar
-                    medianaRangos = listaRangos.ElementAt(listaRangos.Count / 2).Count;
+                    medianaRangos = listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2);
                 }
-                Console.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos);
+                //revisamos en que rango esta para determinar que numero de dado cayo
+                int numeroDado = 0;
+                for (int i = 0; i < listaRangos.Count; i++)
+                {
+                    for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+                    {
+                        if (medianaRangos == listaRangos.ElementAt(i).ElementAt(j))
+                        {
+                            numeroDado = i + 1;
+                        }
+                    }
+                }
+                Console.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos+" con numero de dado: "+numeroDado);
 
                 //Calculamos moda
                 int modaRangos = 0;
@@ -432,13 +475,1132 @@
                     varianzaRangos += Math.Pow((listaRangos.ElementAt(i).Count - mediaRangos), 2);
                 }
                 varianzaRangos = varianzaRangos / 50;
-                Console.WriteLine("La varianza de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + varianzaRangos);
+                Console.WriteLine("La varianza de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + varianzaRangos);
 
                 //Calculamos desviacion estandar
                 double desviacionEstandarRangos = Math.Sqrt(varianzaRangos);
-                Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + desviacionEstandarRangos);
+                Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
             }
 
+            void teoriaDeColas(int numPersonas, int corridas)
+            {
+                log.WriteLine("\n\nSimulacion de la teoria de colas");
+                Console.WriteLine("\n\nSimulacion de la teoria de colas");
+                if (numPersonas < 3 || numPersonas > 7)
+                {
+                    Console.WriteLine("No existe un equipo con ese numero de personas");
+                    log.WriteLine("No existe un equipo con ese numero de personas");
+                    return;
+                }
+                //Variables iguales para todos los casos
+                DateTime hora = new DateTime(2022, 10, 07, 23, 0, 0);
+                DateTime horaLimite = new DateTime(2022, 10, 08, 07, 30, 0);
+                DateTime horaComida = new DateTime(2022, 10, 08, 03, 00, 0);
+                int i = 0;
+                int camionesEnEspera = 0;
+                double rCamionesEnEspera = 0;
+                int corridaActual = 1;
+
+                //Costos
+                int hrsTiempoNormal = 8;
+                double hrsTiempoExtra = 0;
+                double hrsTiempoEspera = 0;
+                double hrsAlmacen = 0;
+                double costoTotal = 0;
+                bool comida = false;
+
+                int inversaCamiones(double r)
+                {
+                    if (r >= 0 && r < 0.5)
+                    {
+                        return 0;
+                    }
+                    else if (r >= 0.5 && r < 0.75)
+                    {
+                        return 1;
+                    }
+                    else if (r >= 0.75 && r < 0.9)
+                    {
+                        return 2;
+                    }
+                    else if (r >= 0.9 && r <= 1)
+                    {
+                        return 3;
+                    }
+                    return 0;
+                }
+
+                int inversaTiempoLlegada(double r)
+                {
+                    if (r >= 0 && r < 0.02)
+                    {
+                        return 20;
+                    }
+                    else if (r >= 0.02 && r < 0.1)
+                    {
+                        return 25;
+                    }
+                    else if (r >= 0.1 && r < 0.22)
+                    {
+                        return 30;
+                    }
+                    else if (r >= 0.22 && r <= 0.47)
+                    {
+                        return 35;
+                    }
+                    else if (r >= 0.47 && r <= 0.67)
+                    {
+                        return 40;
+                    }
+                    else if (r >= 0.67 && r <= 0.82)
+                    {
+                        return 45;
+                    }
+                    else if (r >= 0.82 && r <= 0.92)
+                    {
+                        return 50;
+                    }
+                    else if (r >= 0.92 && r <= 0.97)
+                    {
+                        return 55;
+                    }
+                    else if (r >= 0.97 && r <= 1)
+                    {
+                        return 60;
+                    }
+                    return 0;
+                }
+
+                switch (numPersonas)
+                {
+                    case 3:
+                        int inversaTiempoServicioTres(double r)
+                        {
+                            if (r >= 0 && r < 0.05)
+                            {
+                                return 20;
+                            }
+                            else if (r >= 0.05 && r < 0.15)
+                            {
+                                return 25;
+                            }
+                            else if (r >= 0.15 && r < 0.35)
+                            {
+                                return 30;
+                            }
+                            else if (r >= 0.35 && r <= 0.6)
+                            {
+                                return 35;
+                            }
+                            else if (r >= 0.6 && r <= 0.72)
+                            {
+                                return 40;
+                            }
+                            else if (r >= 0.72 && r <= 0.82)
+                            {
+                                return 45;
+                            }
+                            else if (r >= 0.82 && r <= 0.9)
+                            {
+                                return 50;
+                            }
+                            else if (r >= 0.9 && r <= 0.96)
+                            {
+                                return 55;
+                            }
+                            else if (r >= 0.96 && r <= 1)
+                            {
+                                return 60;
+                            }
+                            return 0;
+                        }
+                        i = 0;
+                        camionesEnEspera = 0;
+                        rCamionesEnEspera = 0;
+                        corridaActual = 1;
+
+                        //Costos
+                        hrsTiempoNormal = 8;
+                        hrsTiempoExtra = 0;
+                        hrsTiempoEspera = 0;
+                        hrsAlmacen = 0;
+                        costoTotal = 0;
+
+                        void imprimeCosto()
+                        {
+                            costoTotal = ((hrsTiempoNormal * 25) * 3) + ((hrsTiempoExtra * 37.5) * 3) + (hrsTiempoEspera * 100) + (hrsAlmacen * 500);
+                            log.WriteLine("Costo total: $" + Math.Round(costoTotal, 4));
+                        }
+
+                        while (corridaActual <= corridas)
+                        {
+                            //Comida
+                            comida = false;
+
+                            log.WriteLine("\n\nCorrida: " + corridaActual);
+                            rCamionesEnEspera = listRi[i];
+                            i++;
+                            camionesEnEspera = inversaCamiones(rCamionesEnEspera);
+                            log.WriteLine("Camiones en estado espera: " + camionesEnEspera + "\nRi:  " + rCamionesEnEspera);
+                            log.WriteLine("#Ri " + "\t\tH.Llegada" + "\t\tHora.Ent.Des" + "\t#Ri " + "\t\tT.Des" + "\tH.Salida" + "\tT.Espera");
+                            llegaCamion(camionesEnEspera);
+                            imprimeCosto();
+                            corridaActual++;
+                        }
+
+                        void llegaCamion(int camionesEnEspera)
+                        {
+                            double naleatorio1;
+                            double naleatorio2;
+                            DateTime horaLlegada = hora;
+                            DateTime horaEntradaDescarga;
+                            DateTime horaSalidaCamion = hora;
+                            double tiempoEsperaTotal = 0;
+                            int tiempoEspera;
+                            int tiempoDescarga;
+                            int camiones;
+
+                            if (camionesEnEspera == 1)
+                            {
+                                camiones = 1;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    naleatorio2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioTres(naleatorio2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        DateTime temp = horaSalidaCamion;
+                                        log.WriteLine("Inicia hora de comida de trabajadores:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("Termina hora de comer de los trabajadores:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioTres(naleatorio2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(naleatorio2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 2)
+                            {
+                                camiones = 2;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    naleatorio2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioTres(naleatorio2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioTres(naleatorio2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(naleatorio2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 3)
+                            {
+                                camiones = 3;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    naleatorio2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioTres(naleatorio2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioTres(naleatorio2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(naleatorio2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+
+                            while (horaLlegada < horaLimite)
+                            {
+                                naleatorio1 = listRi[i];
+                                i++;
+                                naleatorio2 = listRi[i];
+                                i++;
+                                horaLlegada = horaLlegada.AddMinutes(inversaTiempoLlegada(naleatorio1));
+                                //Nose si esto jala bien
+                                if (horaLlegada > horaLimite)
+                                {
+                                    i--;
+                                    i--;
+                                    break;
+                                }
+                                //Si llega a la hora de comida, se espera 30 minutos
+                                if (horaLlegada == horaComida && comida == false)
+                                {
+                                    log.WriteLine("El personal comienza a comer a las:" + horaLlegada.TimeOfDay);
+                                    horaLlegada = horaLlegada.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaLlegada.TimeOfDay);
+                                    comida = true;
+                                }
+                                //
+                                if (horaSalidaCamion < horaLlegada)
+                                {
+                                    horaEntradaDescarga = horaLlegada;
+                                }
+                                else
+                                {
+                                    horaEntradaDescarga = horaSalidaCamion;
+                                }
+                                horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioTres(naleatorio2));
+                                //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                {
+                                    comida = true;
+                                    DateTime temp = horaSalidaCamion;
+                                    log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioTres(naleatorio2);
+                                    log.WriteLine(Math.Round(naleatorio1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(naleatorio2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                                    continue;
+                                }
+                                tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                tiempoDescarga = inversaTiempoServicioTres(naleatorio2);
+                                log.WriteLine(Math.Round(naleatorio1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(naleatorio2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                            }
+                            hrsTiempoExtra = (double)horaSalidaCamion.Subtract(horaLlegada).TotalHours;
+                            hrsTiempoEspera = tiempoEsperaTotal / 60;
+                            hrsAlmacen = (double)horaSalidaCamion.Subtract(hora).TotalHours;
+                        }
+                        break;
+                    case 4:
+                        int inversaTiempoServicioCuatro(double r)
+                        {
+                            if (r >= 0 && r < 0.05)
+                            {
+                                return 15;
+                            }
+                            else if (r >= 0.05 && r < 0.20)
+                            {
+                                return 20;
+                            }
+                            else if (r >= 0.20 && r < 0.40)
+                            {
+                                return 25;
+                            }
+                            else if (r >= 0.40 && r <= 0.6)
+                            {
+                                return 30;
+                            }
+                            else if (r >= 0.6 && r <= 0.75)
+                            {
+                                return 35;
+                            }
+                            else if (r >= 0.75 && r <= 0.87)
+                            {
+                                return 40;
+                            }
+                            else if (r >= 0.87 && r <= 0.95)
+                            {
+                                return 45;
+                            }
+                            else if (r >= 0.95 && r <= 0.99)
+                            {
+                                return 50;
+                            }
+                            else if (r >= 0.99 && r <= 1)
+                            {
+                                return 55;
+                            }
+                            return 0;
+                        }
+                        i = 0;
+                        camionesEnEspera = 0;
+                        rCamionesEnEspera = 0;
+                        corridaActual = 1;
+
+                        //Costos
+                        hrsTiempoNormal = 8;
+                        hrsTiempoExtra = 0;
+                        hrsTiempoEspera = 0;
+                        hrsAlmacen = 0;
+                        costoTotal = 0;
+
+                        while (corridaActual <= corridas)
+                        {
+                            //Comida
+                            comida = false;
+
+                            log.WriteLine("\n\nCorrida: " + corridaActual);
+                            Console.WriteLine("\n\nCorrida: " + corridaActual);
+
+                            rCamionesEnEspera = listRi[i];
+                            camionesEnEspera = inversaCamiones(rCamionesEnEspera);
+                            i++;
+                            log.WriteLine("Camiones en espera: " + camionesEnEspera + "\nPSE: " + rCamionesEnEspera);
+                            log.WriteLine("#PSE" + "\t\tH.Llegada" + "\t\tHora.Ent.Des" + "\t#PSE" + "\t\tT.Des" + "\tH.Salida" + "\tT.Espera");
+                            llegaCamionCuatro(camionesEnEspera);
+                            imprimeCostoCuatro();
+                            corridaActual++;
+                        }
+                        //log.WriteLine("#PSE" + "\t\tHora de llegada" + "\t\tHora de entrada a descarga" + "\t#PSE" + "\t\tTiempo de descarga" + "\tHora de salida del camion" + "\tTiempo de espera" );
+                        void imprimeCostoCuatro()
+                        {
+                            costoTotal = ((hrsTiempoNormal * 25) * 4) + ((hrsTiempoExtra * 37.5) * 4) + (hrsTiempoEspera * 100) + (hrsAlmacen * 500);
+                            log.WriteLine("Costo total: $" + Math.Round(costoTotal, 4));
+                        }
+
+                        void llegaCamionCuatro(int camionesEnEspera)
+                        {
+                            double PSE1;
+                            double PSE2;
+                            DateTime horaLlegada = hora;
+                            DateTime horaEntradaDescarga;
+                            DateTime horaSalidaCamion = hora;
+                            double tiempoEsperaTotal = 0;
+                            int tiempoEspera;
+                            int tiempoDescarga;
+                            int camiones;
+
+                            if (camionesEnEspera == 1)
+                            {
+                                camiones = 1;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCuatro(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCuatro(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 2)
+                            {
+                                camiones = 2;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCuatro(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCuatro(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 3)
+                            {
+                                camiones = 3;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCuatro(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCuatro(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+
+                            while (horaLlegada < horaLimite)
+                            {
+                                PSE1 = listRi[i];
+                                i++;
+                                PSE2 = listRi[i];
+                                i++;
+                                horaLlegada = horaLlegada.AddMinutes(inversaTiempoLlegada(PSE1));
+                                //Nose si esto jala bien
+                                if (horaLlegada > horaLimite)
+                                {
+                                    i--;
+                                    i--;
+                                    break;
+                                }
+                                if (horaLlegada == horaComida)
+                                {
+                                    log.WriteLine("El personal comienza a comer a las:" + horaLlegada.TimeOfDay);
+                                    horaLlegada = horaLlegada.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaLlegada.TimeOfDay);
+                                    comida = true;
+                                }
+                                //
+                                if (horaSalidaCamion < horaLlegada)
+                                {
+                                    horaEntradaDescarga = horaLlegada;
+                                }
+                                else
+                                {
+                                    horaEntradaDescarga = horaSalidaCamion;
+                                }
+                                horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCuatro(PSE2));
+                                //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                {
+                                    comida = true;
+                                    DateTime temp = horaSalidaCamion;
+                                    log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCuatro(PSE2);
+                                    log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                                    continue;
+                                }
+                                tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                tiempoDescarga = inversaTiempoServicioCuatro(PSE2);
+                                log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                            }
+                            hrsTiempoExtra = (double)horaSalidaCamion.Subtract(horaLlegada).TotalHours;
+                            hrsTiempoEspera = tiempoEsperaTotal / 60;
+                            hrsAlmacen = (double)horaSalidaCamion.Subtract(hora).TotalHours;
+                        }
+                        break;
+                    case 5:
+                        int inversaTiempoServicioCinco(double r)
+                        {
+                            if (r >= 0 && r < 0.1)
+                            {
+                                return 10;
+                            }
+                            else if (r >= 0.1 && r < 0.28)
+                            {
+                                return 15;
+                            }
+                            else if (r >= 0.28 && r < 0.5)
+                            {
+                                return 20;
+                            }
+                            else if (r >= 0.5 && r <= 0.68)
+                            {
+                                return 25;
+                            }
+                            else if (r >= 0.68 && r <= 0.78)
+                            {
+                                return 30;
+                            }
+                            else if (r >= 0.78 && r <= 0.86)
+                            {
+                                return 35;
+                            }
+                            else if (r >= 0.86 && r <= 0.92)
+                            {
+                                return 40;
+                            }
+                            else if (r >= 0.92 && r <= 0.97)
+                            {
+                                return 45;
+                            }
+                            else if (r >= 0.97 && r <= 1)
+                            {
+                                return 50;
+                            }
+                            return 0;
+                        }
+                        i = 0;
+                        camionesEnEspera = 0;
+                        rCamionesEnEspera = 0;
+                        corridaActual = 1;
+
+                        //Costos
+                        hrsTiempoNormal = 8;
+                        hrsTiempoExtra = 0;
+                        hrsTiempoEspera = 0;
+                        hrsAlmacen = 0;
+                        costoTotal = 0;
+
+                        while (corridaActual <= corridas)
+                        {
+                            //Comida
+                            comida = false;
+
+                            log.WriteLine("\n\nCorrida: " + corridaActual);
+                            Console.WriteLine("\n\nCorrida: " + corridaActual);
+
+                            rCamionesEnEspera = listRi[i];
+                            camionesEnEspera = inversaCamiones(rCamionesEnEspera);
+                            i++;
+                            log.WriteLine("Camiones en espera: " + camionesEnEspera + "\nPSE: " + rCamionesEnEspera);
+                            log.WriteLine("#PSE" + "\t\tH.Llegada" + "\t\tHora.Ent.Des" + "\t#PSE" + "\t\tT.Des" + "\tH.Salida" + "\tT.Espera");
+                            llegaCamionCinco(camionesEnEspera);
+                            imprimeCostoCinco();
+                            corridaActual++;
+                        }
+                        //log.WriteLine("#PSE" + "\t\tHora de llegada" + "\t\tHora de entrada a descarga" + "\t#PSE" + "\t\tTiempo de descarga" + "\tHora de salida del camion" + "\tTiempo de espera" );
+                        void imprimeCostoCinco()
+                        {
+                            costoTotal = ((hrsTiempoNormal * 25) * 5) + ((hrsTiempoExtra * 37.5) * 5) + (hrsTiempoEspera * 100) + (hrsAlmacen * 500);
+                            log.WriteLine("Costo total: $" + Math.Round(costoTotal, 4));
+                        }
+
+                        void llegaCamionCinco(int camionesEnEspera)
+                        {
+                            double PSE1;
+                            double PSE2;
+                            DateTime horaLlegada = hora;
+                            DateTime horaEntradaDescarga;
+                            DateTime horaSalidaCamion = hora;
+                            double tiempoEsperaTotal = 0;
+                            int tiempoEspera;
+                            int tiempoDescarga;
+                            int camiones;
+
+                            if (camionesEnEspera == 1)
+                            {
+                                camiones = 1;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCinco(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCinco(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 2)
+                            {
+                                camiones = 2;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCinco(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCinco(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 3)
+                            {
+                                camiones = 3;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCinco(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCinco(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+
+                            while (horaLlegada < horaLimite)
+                            {
+                                PSE1 = listRi[i];
+                                i++;
+                                PSE2 = listRi[i];
+                                i++;
+                                horaLlegada = horaLlegada.AddMinutes(inversaTiempoLlegada(PSE1));
+                                //Nose si esto jala bien
+                                if (horaLlegada > horaLimite)
+                                {
+                                    i--;
+                                    i--;
+                                    break;
+                                }
+                                if (horaLlegada == horaComida)
+                                {
+                                    log.WriteLine("El personal comienza a comer a las:" + horaLlegada.TimeOfDay);
+                                    horaLlegada = horaLlegada.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaLlegada.TimeOfDay);
+                                    comida = true;
+                                }
+                                //
+                                if (horaSalidaCamion < horaLlegada)
+                                {
+                                    horaEntradaDescarga = horaLlegada;
+                                }
+                                else
+                                {
+                                    horaEntradaDescarga = horaSalidaCamion;
+                                }
+                                horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioCinco(PSE2));
+                                //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                {
+                                    comida = true;
+                                    DateTime temp = horaSalidaCamion;
+                                    log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioCinco(PSE2);
+                                    log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                                    continue;
+                                }
+                                tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                tiempoDescarga = inversaTiempoServicioCinco(PSE2);
+
+                                log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                            }
+                            hrsTiempoExtra = (double)horaSalidaCamion.Subtract(horaLlegada).TotalHours;
+                            hrsTiempoEspera = tiempoEsperaTotal / 60;
+                            hrsAlmacen = (double)horaSalidaCamion.Subtract(hora).TotalHours;
+                        }
+                        break;
+                    case 6:
+                        int inversaTiempoServicioSeis(double r)
+                        {
+                            if (r >= 0 && r < 0.12)
+                            {
+                                return 5;
+                            }
+                            else if (r >= 0.12 && r < 0.27)
+                            {
+                                return 10;
+                            }
+                            else if (r >= 0.27 && r < 0.53)
+                            {
+                                return 15;
+                            }
+                            else if (r >= 0.53 && r <= 0.68)
+                            {
+                                return 20;
+                            }
+                            else if (r >= 0.68 && r <= 0.8)
+                            {
+                                return 25;
+                            }
+                            else if (r >= 0.8 && r <= 0.88)
+                            {
+                                return 30;
+                            }
+                            else if (r >= 0.88 && r <= 0.94)
+                            {
+                                return 35;
+                            }
+                            else if (r >= 0.94 && r <= 0.98)
+                            {
+                                return 40;
+                            }
+                            else if (r >= 0.98 && r <= 1)
+                            {
+                                return 45;
+                            }
+                            return 0;
+                        }
+                        i = 0;
+                        camionesEnEspera = 0;
+                        rCamionesEnEspera = 0;
+                        corridaActual = 1;
+
+                        //Costos
+                        hrsTiempoNormal = 8;
+                        hrsTiempoExtra = 0;
+                        hrsTiempoEspera = 0;
+                        hrsAlmacen = 0;
+                        costoTotal = 0;
+
+                        while (corridaActual <= corridas)
+                        {
+                            //Comida
+                            comida = false;
+
+                            log.WriteLine("\n\nCorrida: " + corridaActual);
+                            Console.WriteLine("\n\nCorrida: " + corridaActual);
+
+                            rCamionesEnEspera = listRi[i];
+                            camionesEnEspera = inversaCamiones(rCamionesEnEspera);
+                            i++;
+                            log.WriteLine("Camiones en espera: " + camionesEnEspera + "\nPSE: " + rCamionesEnEspera);
+                            log.WriteLine("#PSE" + "\t\tH.Llegada" + "\t\tHora.Ent.Des" + "\t#PSE" + "\t\tT.Des" + "\tH.Salida" + "\tT.Espera");
+                            llegaCamionSeis(camionesEnEspera);
+                            imprimeCostoSeis();
+                            corridaActual++;
+                        }
+                        //log.WriteLine("#PSE" + "\t\tHora de llegada" + "\t\tHora de entrada a descarga" + "\t#PSE" + "\t\tTiempo de descarga" + "\tHora de salida del camion" + "\tTiempo de espera" );
+                        void imprimeCostoSeis()
+                        {
+                            costoTotal = ((hrsTiempoNormal * 25) * 6) + ((hrsTiempoExtra * 37.5) * 6) + (hrsTiempoEspera * 100) + (hrsAlmacen * 500);
+                            log.WriteLine("Costo total: $" + Math.Round(costoTotal, 4));
+                        }
+
+                        void llegaCamionSeis(int camionesEnEspera)
+                        {
+                            double PSE1;
+                            double PSE2;
+                            DateTime horaLlegada = hora;
+                            DateTime horaEntradaDescarga;
+                            DateTime horaSalidaCamion = hora;
+                            double tiempoEsperaTotal = 0;
+                            int tiempoEspera;
+                            int tiempoDescarga;
+                            int camiones;
+
+                            if (camionesEnEspera == 1)
+                            {
+                                camiones = 1;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioSeis(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioSeis(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 2)
+                            {
+                                camiones = 2;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioSeis(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioSeis(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+                            else if (camionesEnEspera == 3)
+                            {
+                                camiones = 3;
+                                while (camiones != 0)
+                                {
+                                    if (camiones == 0) break;
+                                    horaLlegada = hora;
+                                    PSE2 = listRi[i];
+                                    i++;
+                                    if (horaSalidaCamion < horaLlegada)
+                                    {
+                                        horaEntradaDescarga = horaLlegada;
+                                    }
+                                    else
+                                    {
+                                        horaEntradaDescarga = horaSalidaCamion;
+                                    }
+                                    horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioSeis(PSE2));
+                                    //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                    if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                    {
+                                        comida = true;
+                                        log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                        horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                        log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    }
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioSeis(PSE2);
+
+                                    log.WriteLine("0.0000" + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + horaSalidaCamion.TimeOfDay + "\t\t" + tiempoEspera);
+                                    camiones--;
+                                }
+
+                            }
+
+                            while (horaLlegada < horaLimite)
+                            {
+                                PSE1 = listRi[i];
+                                i++;
+                                PSE2 = listRi[i];
+                                i++;
+                                horaLlegada = horaLlegada.AddMinutes(inversaTiempoLlegada(PSE1));
+                                //Nose si esto jala bien
+                                if (horaLlegada > horaLimite)
+                                {
+                                    i--;
+                                    i--;
+                                    break;
+                                }
+                                if (horaLlegada == horaComida)
+                                {
+                                    log.WriteLine("El personal comienza a comer a las:" + horaLlegada.TimeOfDay);
+                                    horaLlegada = horaLlegada.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaLlegada.TimeOfDay);
+                                    comida = true;
+
+                                }
+                                //
+                                if (horaSalidaCamion < horaLlegada)
+                                {
+                                    horaEntradaDescarga = horaLlegada;
+                                }
+                                else
+                                {
+                                    horaEntradaDescarga = horaSalidaCamion;
+                                }
+                                horaSalidaCamion = horaEntradaDescarga.AddMinutes(inversaTiempoServicioSeis(PSE2));
+                                //Si acaba de salir un camion a la hora de comida, se espera 30 minutos
+                                if ((horaSalidaCamion >= horaComida) && (comida == false))
+                                {
+                                    comida = true;
+                                    DateTime temp = horaSalidaCamion;
+                                    log.WriteLine("El personal comienza a comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    horaSalidaCamion = horaSalidaCamion.AddMinutes(30);
+                                    log.WriteLine("El personal termina de comer a las:" + horaSalidaCamion.TimeOfDay);
+                                    tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                    tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                    tiempoDescarga = inversaTiempoServicioSeis(PSE2);
+                                    log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                                    continue;
+                                }
+                                tiempoEspera = (int)horaEntradaDescarga.Subtract(horaLlegada).TotalMinutes;
+                                tiempoEsperaTotal = tiempoEsperaTotal + tiempoEspera;
+                                tiempoDescarga = inversaTiempoServicioSeis(PSE2);
+
+                                log.WriteLine(Math.Round(PSE1, 4) + "\t\t" + horaLlegada.TimeOfDay + "\t\t" + horaEntradaDescarga.TimeOfDay + "\t\t" + Math.Round(PSE2, 4) + "\t\t" + tiempoDescarga + "\t\t" + (horaSalidaCamion.AddMinutes(-30)).TimeOfDay + "\t\t" + tiempoEspera);
+                            }
+                            hrsTiempoExtra = (double)horaSalidaCamion.Subtract(horaLlegada).TotalHours;
+                            hrsTiempoEspera = tiempoEsperaTotal / 60;
+                            hrsAlmacen = (double)horaSalidaCamion.Subtract(hora).TotalHours;
+                        }
+                        break;
+                }
+            } 
+
+            teoriaDeColas(3, 10); 
+        }
+
+        //metodo para crear el archivo csv
+        static void escribirCSV(String nombre, String apellido, String pais)
+        {
+            String ruta = @"C:\Users\ormoj\Documents\Semestre 5\Simulacion\pruebaArchivoLog\registroCamiones.csv";
+            String separador = ",";
+            StringBuilder salida = new StringBuilder();
+
+            String cadena = nombre + "," + apellido + ","  + pais;
+            List<String> lista = new List<string>();
+            lista.Add(cadena);
+
+            for (int i = 0; i < lista.Count ; i++)
+            salida.AppendLine(string.Join(separador, lista[i]));
+
+            // CREA Y ESCRIBE EL ARCHIVO CSV
+            //File.WriteAllText(ruta, salida.ToString());
+
+            // AÑADE MAS LINEAS AL ARCHIVO CSV
+            File.AppendAllText(ruta, salida.ToString());
         }
     }
 }
