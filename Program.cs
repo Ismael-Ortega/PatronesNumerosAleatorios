@@ -16,9 +16,12 @@ namespace programaNumerosAleatoriosV2
             //Lista que genera los valores de ri
             List<double> listRi = new List<double>();
 
+            //variables a crear nuestro archivo de registro
             StreamWriter log;
             log = new StreamWriter("C:/Users/ormoj/Documents/Semestre 5/Simulacion/programaNumerosAleatoriosV2/file.log");
             log.AutoFlush = true;
+
+            //algoritmo lineal para generar los numeros aleatorios
 
             float x0 = 6;
             double xi = 0;
@@ -28,6 +31,9 @@ namespace programaNumerosAleatoriosV2
             float a = 1 + 4 * k;
             double m = Math.Pow(2, g);
             double ri = 0;
+
+            //pedimos datos al usuario
+
 
             //prueba de medias
             double suma = 0;
@@ -46,7 +52,14 @@ namespace programaNumerosAleatoriosV2
             */
 
             Console.Write("Numero de numeros aleatorios (m) vale: " + m + "\n");
-
+            log.WriteLine("Parametros:");
+            log.WriteLine("m = " + m);
+            log.WriteLine("a = " + a);
+            log.WriteLine("c = " + c);
+            log.WriteLine("g = " + g);
+            log.WriteLine("k = " + k);
+            log.WriteLine("Semilla x0 = " + x0);
+            log.WriteLine("\nNumeros aleatorios generados: \n");
             //metemos el primer numero que es 6 (nosotros elegimos este numero arbitrariamente)
             list.Add((int)x0);
 
@@ -57,7 +70,7 @@ namespace programaNumerosAleatoriosV2
                 list.Add((int)xi);
                 //Console.Write("Agregue el numero: " + xi + " a la lista\n");
             }
-
+            Console.WriteLine("Numeros pesudoaleatorios generados exitosamente");
             //for que genera los numeros ri
             foreach (int item in list)
             {
@@ -69,27 +82,26 @@ namespace programaNumerosAleatoriosV2
 
 
             //for que muestra los numeros generados en xi
-            /* Console.WriteLine("Los numeros generados son: ");
+            //Console.WriteLine("Los numeros generados son: ");
             foreach (int j in list)
             {
-                Console.WriteLine("x indice "+list.IndexOf(j)+" con valor: "+j+"\n");
-            } */
-            Console.WriteLine("x indice " + list.ElementAt(0) + " con valor: " + 0 + "\n");
-            Console.WriteLine("x indice " + list.ElementAt(1) + " con valor: " + 1 + "\n");
+                //log.WriteLine("x indice "+list.IndexOf(j)+" con valor: "+j+"\n");
+            }
+            //Console.WriteLine("x indice " + list.ElementAt(0) + " con valor: " + 0 + "\n");
+            //Console.WriteLine("x indice " + list.ElementAt(1) + " con valor: " + 1 + "\n");
 
 
             //for que muestra los numeros generados en ri
             //Console.WriteLine("Los numeros ri son: ");
             foreach (double j in listRi)
             {
-                //Console.WriteLine("ri indice " + listRi.IndexOf(j) + " con valor: " + j + "\n");
+                log.WriteLine("ri indice " + listRi.IndexOf(j) + " con valor: " + j + "\n");
             }
-            Console.WriteLine("ri indice " + listRi.ElementAt(0) + " con valor: " + 0 + "\n");
-            Console.WriteLine("ri indice " + listRi.ElementAt(1) + " con valor: " + 1 + "\n");
+            //Console.WriteLine("ri indice " + listRi.ElementAt(0) + " con valor: " + 0 + "\n");
+            //Console.WriteLine("ri indice " + listRi.ElementAt(1) + " con valor: " + 1 + "\n");
 
 
             /**********MOSTRAMOS LOS RESULTADOS *******/
-            Console.Write("/****************** RESULTADOS *******************/\n");
             //metodo que busca repeticiones
             var result = list.GroupBy(x => x)
                             .Where(g => g.Count() > 1)
@@ -110,9 +122,10 @@ namespace programaNumerosAleatoriosV2
             /*********PRUEBA DE MEDIAS**************/
             //obtener promedio
             Console.WriteLine("1.- PRUEBA DE MEDIAS");
+            log.WriteLine("1.- PRUEBA DE MEDIAS");
 
             double promedioRi = suma / listRi.Count;
-            Console.WriteLine("El promedio es: " + promedioRi);
+            log.WriteLine("El promedio es: " + promedioRi);
 
             /**********LI Y LS**************/
             double li = 0;
@@ -123,19 +136,20 @@ namespace programaNumerosAleatoriosV2
 
             if (promedioRi > li && promedioRi < ls)
             {
-                Console.WriteLine("El promedio esta dentro del intervalo");
-                Console.WriteLine("Li: " + li + " Ls: " + ls);
-                Console.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de medias");
-                Console.WriteLine("");
+                log.WriteLine("El promedio esta dentro del intervalo "+li+" < "+promedioRi+" < "+ls);
+                log.WriteLine("Li: " + li + " Ls: " + ls);
+                log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de medias\n");
+                //Console.WriteLine("El promedio esta dentro del intervalo " + li + " < " + promedioRi + " < " + ls);
             }
             else
             {
-                Console.WriteLine("El promedio esta fuera del intervalo");
-                Console.WriteLine("El metodo no es aceptado");
+                log.WriteLine("El promedio esta fuera del intervalo");
+                log.WriteLine("El metodo no es aceptado");
             }
 
             /*********PRUEBA DE VARIANZA**************/
             Console.WriteLine("2.- PRUEBA DE VARIANZA");
+            log.WriteLine("2.- PRUEBA DE VARIANZA");
             double Sumavarianza = 0;
 
             foreach (double j in listRi)
@@ -144,7 +158,7 @@ namespace programaNumerosAleatoriosV2
             }
 
             double varianzaRi = Sumavarianza / (listRi.Count - 1);
-            Console.WriteLine("La varianza es: " + varianzaRi);
+            log.WriteLine("La varianza es: " + varianzaRi);
 
             //calculamos los limites de aceptacion
             double liVarianza = 0;
@@ -157,23 +171,24 @@ namespace programaNumerosAleatoriosV2
 
             if (varianzaRi > liVarianza && varianzaRi < lsVarianza)
             {
-                Console.WriteLine("La varianza esta dentro del intervalo");
-                Console.WriteLine("Li: " + liVarianza + " Ls: " + lsVarianza);
-                Console.WriteLine("Se acepta la hipotesis nula (H0)\n");
+                log.WriteLine("La varianza esta dentro del intervalo "+liVarianza+" < "+varianzaRi+" < "+lsVarianza);
+                log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de varianza\n");
             }
             /**********PRUEBA DE UNIFORMIDAD**************/
             Console.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
             Console.WriteLine("PRUEBA DE CHI CUADRADA");
+            log.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
+            log.WriteLine("PRUEBA DE CHI CUADRADA");
             /**********PRUEBA DE CHI CUADRADA ************/
             /***** Clasificamos los numeros aleatorios*********/
             //obtenemos m2
             double n = m;
             double m2 = Math.Ceiling(Math.Sqrt(n));
-            Console.Write("m2 vale: " + m2 + "\n");
+            log.Write("m2 vale: " + m2 + "\n");
 
             //obtenemos el ancho de clase
             double anchoClase = Math.Round(1 / m2, 4);
-            Console.Write("El ancho de clase es: " + anchoClase + "\n");
+            log.Write("El ancho de clase es: " + anchoClase + "\n");
 
             //ahora clasificamos los numeros aleatorios por rango de valores
             //creamos una lista de listas
@@ -234,19 +249,22 @@ namespace programaNumerosAleatoriosV2
             //entonces se acepta la hipotesis nula
             if (chiCuadrada > sumaEcuacion)
             {
-                Console.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es mayor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
-                Console.WriteLine("Se acepta la hipotesis nula\n");
+                log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es mayor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
+                log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de uniformidad\n");
             }
             else
             {
-                Console.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es menor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
-                Console.WriteLine("Se rechaza la hipotesis nula\n");
+                log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es menor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
+                log.WriteLine("Se rechaza la hipotesis nula\n");
             }
             /***** PRUEBAS DE INDEPENDENCIA******/
 
             /**PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA *******/
             Console.WriteLine("4.- PRUEBA DE INDEPENDENCIA");
             Console.WriteLine("PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA");
+            log.WriteLine("4.- PRUEBA DE INDEPENDENCIA");
+            log.WriteLine("PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA");
+            
             //revisamos los numeros Ri
             List<double> listaConjuntoS = new List<double>();
             for (int i = 0; i < listRi.Count; i++)
@@ -264,7 +282,7 @@ namespace programaNumerosAleatoriosV2
             }
 
             //contamos las corridas
-            int corridas = 0;
+            /* int corridas = 0;
             for (int i = 0; i < listaConjuntoS.Count; i++)
             {
                 //si no se sale del rango, hacemos la validacion, y si no terminamos el ciclo
@@ -275,9 +293,7 @@ namespace programaNumerosAleatoriosV2
                         corridas++;
                     }
                 }
-
-
-            }
+            } */
 
             //calculamos n0 (cantidad de ceros)
             double n0 = 0;
@@ -288,6 +304,8 @@ namespace programaNumerosAleatoriosV2
                     n0++;
                 }
             }
+            //el numero de corridas es el numero de ceros
+            double corridas = n0;
             //calculamos n1 (cantidad de unos)
             double n1 = 0;
             for (int i = 0; i < listaConjuntoS.Count; i++)
@@ -299,7 +317,7 @@ namespace programaNumerosAleatoriosV2
             }
 
             //promedio de las corridas observadas
-            double promedioCorridas = (2 * n0 * n1) / (n0 + n1) + 0.5;
+            double promedioCorridas = ((2 * n0 * n1) / (n0 + n1)) + 0.5;
 
             //varianza de las corridas observadas
             double varianzaCorridas = (2 * n0 * n1) * ((2 * n0 * n1) - (n0 + n1)) / Math.Pow((n0 + n1), 2) * (n0 + n1 - 1);
@@ -313,7 +331,8 @@ namespace programaNumerosAleatoriosV2
             //hacemos la validacion para revisar si la prueba es aceptada o no
             if (-z0_5 < z0 && z0 < z0_5)
             {
-                Console.WriteLine("La prueba de corridas arriba y abajo de la media es aceptada\n");
+                log.WriteLine("La prueba de corridas arriba y abajo de la media es aceptada ");
+                log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de independencia\n");
             }
             else
             {
@@ -349,143 +368,159 @@ namespace programaNumerosAleatoriosV2
             double desviacionEstandarRi = Math.Sqrt(varianzaRi);
             Console.WriteLine("La desviacion estandar de los valores RI es: " + desviacionEstandarRi);
 
+
             /***********PRUEBA DE 1 DADO*************/
             //Obtenemos la prueba de dados con 1 dado y seran 10 corridas
-            int cantidadCorridas = 500;
-            for (int ordenCorrida = 0; ordenCorrida < cantidadCorridas; ordenCorrida += 50)
+            //creamos una funcion para la prueba de dados que reciba como parametro el numero de numeros aleatorios que ocuparas
+            void dados(int cantidadCorridas)
             {
-                int rangoInf = 0;
-                int rangoSup = 0;
-                rangoInf = ordenCorrida+1;
-                rangoSup = ordenCorrida + 50;
-                if(rangoInf == 1){
-                    rangoInf = 0;
-                }
-
-                Console.WriteLine("\nCorrida en el rango de " + (rangoInf) + " a " + (rangoSup));
-                //obtenemos el ancho que tendra cada rango donde clasificaremos los numeros aleatorios
-                double anchoRango = 1.0 / 6.0;
-
-                //obtenemos la cantidad de numeros aleatorios que caeran en cada rango
-                //creamos una lista para guardar las listas que creamos para cada rango
-                List<List<double>> listaRangos = new List<List<double>>();
-                //creamos una lista auxiliar para guardar los numeros aleatorios que caen en cada rango
-                List<double> listaAuxiliarRangos = new List<double>();
-
-                //clasificaremos los primero 50 numeros aleatorios ri y luego de 51 al 100
-
-                //recorremos el dado del numero 1 al 6
-                for (int i = 0; i < 6; i++)
-                {
-                    //recorremos la lista de numeros aleatorios ri
-                    for (int j = rangoInf; j < rangoSup; j++)
-                    {
-                        //si el numero aleatorio ri cae en el rango
-                        if (listRi.ElementAt(j) >= (i * anchoRango) && listRi.ElementAt(j) < ((i + 1) * anchoRango))
-                        {
-                            //agregamos el numero aleatorio a la lista auxiliar
-                            listaAuxiliarRangos.Add(listRi.ElementAt(j));
-                        }
-                    }
-                    //agregamos la lista auxiliar a la lista de rangos
-                    listaRangos.Add(listaAuxiliarRangos);
-                    //limpiamos la lista auxiliar
-                    listaAuxiliarRangos = new List<double>();
-                }
-
-                //mostramos los numeros aleatorios que caen en cada rango
-                for (int i = 0; i < listaRangos.Count; i++)
-                {
-                    Console.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
-                    //Listamos los numeros aleatorios que caen en cada rango
-                    foreach (double item in listaRangos.ElementAt(i))
-                    {
-                        //Console.WriteLine("El numero aleatorio " + item + " cae en el rango del numero del dado " + (i + 1));
-                        //Console.WriteLine(item);
-                    }
-                }
-
-                /************MEDIA, MEDIANA, VARIANZA Y DESVIACION ESTANDAR*********/
-
-                //calculamos media de los numeros aleatorios que caen en cada rango
-                double mediaRangos = 0;
-                for (int i = 0; i < listaRangos.Count; i++)
-                {
-                    mediaRangos += listaRangos.ElementAt(i).Count * (1 + i);
-                }
-                //Console.WriteLine("Numero de intervalos: " + listaRangos.Count);
-                mediaRangos = mediaRangos / 50;
-                Console.WriteLine("La media de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + mediaRangos);
+                log.WriteLine("/*********PRUEBA DE DADOS***********/");
+                Console.WriteLine("\n/*********PRUEBA DE DADOS***********/");
                 
-                //Obtenemos mediana
-                double medianaRangos = 0;
-                //guardamos los numeros aleatorios en donde calcularemos la mediana
-                List<double> listaAuxiliarMediana = new List<double>();
-                for (int i = 0; i < listaRangos.Count; i++)
+                //int cantidadCorridas = 500;
+                for (int ordenCorrida = 0; ordenCorrida < cantidadCorridas; ordenCorrida += 50)
                 {
-                    for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+                    int rangoInf = 0;
+                    int rangoSup = 0;
+                    rangoInf = ordenCorrida + 1;
+                    rangoSup = ordenCorrida + 50;
+                    if (rangoInf == 1)
                     {
-                        listaAuxiliarMediana.Add(listaRangos.ElementAt(i).ElementAt(j));
+                        rangoInf = 0;
                     }
-                }
-                //ordenamos la lista auxiliar
-                listaAuxiliarMediana.Sort();
-                //calculamos la mediana
-                if (listaAuxiliarMediana.Count % 2 == 0)
-                {
-                    //si la cantidad de elementos es par
-                    medianaRangos = (listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2) + listaAuxiliarMediana.ElementAt((listaAuxiliarMediana.Count / 2) - 1)) / 2;
-                }
-                else
-                {
-                    //si la cantidad de elementos es impar
-                    medianaRangos = listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2);
-                }
-                //revisamos en que rango esta para determinar que numero de dado cayo
-                int numeroDado = 0;
-                for (int i = 0; i < listaRangos.Count; i++)
-                {
-                    for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+
+                    //Console.WriteLine("\nCorrida en el rango de " + (rangoInf) + " a " + (rangoSup));
+                    log.WriteLine("\nCorrida en el rango de " + (rangoInf) + " a " + (rangoSup));
+                    //obtenemos el ancho que tendra cada rango donde clasificaremos los numeros aleatorios
+                    double anchoRango = 1.0 / 6.0;
+
+                    //obtenemos la cantidad de numeros aleatorios que caeran en cada rango
+                    //creamos una lista para guardar las listas que creamos para cada rango
+                    List<List<double>> listaRangos = new List<List<double>>();
+                    //creamos una lista auxiliar para guardar los numeros aleatorios que caen en cada rango
+                    List<double> listaAuxiliarRangos = new List<double>();
+
+                    //clasificaremos los primero 50 numeros aleatorios ri y luego de 51 al 100
+
+                    //recorremos el dado del numero 1 al 6
+                    for (int i = 0; i < 6; i++)
                     {
-                        if (medianaRangos == listaRangos.ElementAt(i).ElementAt(j))
+                        //recorremos la lista de numeros aleatorios ri
+                        for (int j = rangoInf; j < rangoSup; j++)
                         {
-                            numeroDado = i + 1;
+                            //si el numero aleatorio ri cae en el rango
+                            if (listRi.ElementAt(j) >= (i * anchoRango) && listRi.ElementAt(j) < ((i + 1) * anchoRango))
+                            {
+                                //agregamos el numero aleatorio a la lista auxiliar
+                                listaAuxiliarRangos.Add(listRi.ElementAt(j));
+                            }
+                        }
+                        //agregamos la lista auxiliar a la lista de rangos
+                        listaRangos.Add(listaAuxiliarRangos);
+                        //limpiamos la lista auxiliar
+                        listaAuxiliarRangos = new List<double>();
+                    }
+
+                    //mostramos los numeros aleatorios que caen en cada rango
+                    for (int i = 0; i < listaRangos.Count; i++)
+                    {
+                        //Console.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
+                        log.WriteLine("El numero de numeros aleatorios que caen en el numero del dado " + (i + 1) + " son: " + listaRangos.ElementAt(i).Count);
+                        //Listamos los numeros aleatorios que caen en cada rango
+                        foreach (double item in listaRangos.ElementAt(i))
+                        {
+                            //Console.WriteLine("El numero aleatorio " + item + " cae en el rango del numero del dado " + (i + 1));
+                            //Console.WriteLine(item);
                         }
                     }
-                }
-                Console.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos+" con numero de dado: "+numeroDado);
 
-                //Calculamos moda
-                int modaRangos = 0;
-                int contadorModa = 0;
-                for (int i = 0; i < listaRangos.Count; i++)
-                {
-                    if (listaRangos.ElementAt(i).Count > contadorModa)
+                    /************MEDIA, MEDIANA, VARIANZA Y DESVIACION ESTANDAR*********/
+
+                    //calculamos media de los numeros aleatorios que caen en cada rango
+                    double mediaRangos = 0;
+                    for (int i = 0; i < listaRangos.Count; i++)
                     {
-                        contadorModa = listaRangos.ElementAt(i).Count;
-                        modaRangos = i + 1;
+                        mediaRangos += listaRangos.ElementAt(i).Count * (1 + i);
                     }
-                }
-                Console.WriteLine("La moda de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + modaRangos);
+                    //Console.WriteLine("Numero de intervalos: " + listaRangos.Count);
+                    mediaRangos = mediaRangos / 50;
+                    //Console.WriteLine("La media de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + mediaRangos);
+                    log.WriteLine("La media de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + mediaRangos);
+                    //Obtenemos mediana
+                    double medianaRangos = 0;
+                    //guardamos los numeros aleatorios en donde calcularemos la mediana
+                    List<double> listaAuxiliarMediana = new List<double>();
+                    for (int i = 0; i < listaRangos.Count; i++)
+                    {
+                        for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+                        {
+                            listaAuxiliarMediana.Add(listaRangos.ElementAt(i).ElementAt(j));
+                        }
+                    }
+                    //ordenamos la lista auxiliar
+                    listaAuxiliarMediana.Sort();
+                    //calculamos la mediana
+                    if (listaAuxiliarMediana.Count % 2 == 0)
+                    {
+                        //si la cantidad de elementos es par
+                        medianaRangos = (listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2) + listaAuxiliarMediana.ElementAt((listaAuxiliarMediana.Count / 2) - 1)) / 2;
+                    }
+                    else
+                    {
+                        //si la cantidad de elementos es impar
+                        medianaRangos = listaAuxiliarMediana.ElementAt(listaAuxiliarMediana.Count / 2);
+                    }
+                    //revisamos en que rango esta para determinar que numero de dado cayo
+                    int numeroDado = 0;
+                    for (int i = 0; i < listaRangos.Count; i++)
+                    {
+                        for (int j = 0; j < listaRangos.ElementAt(i).Count; j++)
+                        {
+                            if (medianaRangos == listaRangos.ElementAt(i).ElementAt(j))
+                            {
+                                numeroDado = i + 1;
+                            }
+                        }
+                    }
+                    //Console.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos + " con numero de dado: " + numeroDado);
+                    log.WriteLine("La mediana de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + medianaRangos + " con numero de dado: " + numeroDado);
+                    //Calculamos moda
+                    int modaRangos = 0;
+                    int contadorModa = 0;
+                    for (int i = 0; i < listaRangos.Count; i++)
+                    {
+                        if (listaRangos.ElementAt(i).Count > contadorModa)
+                        {
+                            contadorModa = listaRangos.ElementAt(i).Count;
+                            modaRangos = i + 1;
+                        }
+                    }
+                    //Console.WriteLine("La moda de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + modaRangos);
+                    log.WriteLine("La moda de los numeros en el rango de " + (ordenCorrida + 1) + " a " + (ordenCorrida + 50) + " es: " + modaRangos);
+                    //Calculamos varianza
+                    double varianzaRangos = 0;
+                    for (int i = 0; i < listaRangos.Count; i++)
+                    {
+                        varianzaRangos += Math.Pow((listaRangos.ElementAt(i).Count - mediaRangos), 2);
+                    }
+                    varianzaRangos = varianzaRangos / 50;
+                    //Console.WriteLine("La varianza de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + varianzaRangos);
+                    log.WriteLine("La varianza de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + varianzaRangos);
 
-                //Calculamos varianza
-                double varianzaRangos = 0;
-                for (int i = 0; i < listaRangos.Count; i++)
-                {
-                    varianzaRangos += Math.Pow((listaRangos.ElementAt(i).Count - mediaRangos), 2);
+                    //Calculamos desviacion estandar
+                    double desviacionEstandarRangos = Math.Sqrt(varianzaRangos);
+                    //Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
+                    log.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
+                
                 }
-                varianzaRangos = varianzaRangos / 50;
-                Console.WriteLine("La varianza de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + varianzaRangos);
 
-                //Calculamos desviacion estandar
-                double desviacionEstandarRangos = Math.Sqrt(varianzaRangos);
-                Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
             }
+
 
             void teoriaDeColas(int numPersonas, int corridas)
             {
-                log.WriteLine("\n\nSimulacion de la teoria de colas");
-                Console.WriteLine("\n\nSimulacion de la teoria de colas");
+                log.WriteLine("\n/************Simulacion de la teoria de colas***************/");
+                Console.WriteLine("\n/************Simulacion de la teoria de colas***************/");
                 if (numPersonas < 3 || numPersonas > 7)
                 {
                     Console.WriteLine("No existe un equipo con ese numero de personas");
@@ -628,6 +663,10 @@ namespace programaNumerosAleatoriosV2
 
                         void imprimeCosto()
                         {
+                            //la hora por trabajador en tiempo normal se paga a $25 la hora por persona
+                            //la hora por trabajador en tiempo extra se paga a $37.5 la hora por persona
+                            //las horas en espera de los camiones se pagan a $100
+                            //costo de operar el almacen por hora es de $500
                             costoTotal = ((hrsTiempoNormal * 25) * 3) + ((hrsTiempoExtra * 37.5) * 3) + (hrsTiempoEspera * 100) + (hrsAlmacen * 500);
                             log.WriteLine("Costo total: $" + Math.Round(costoTotal, 4));
                         }
@@ -647,6 +686,7 @@ namespace programaNumerosAleatoriosV2
                             imprimeCosto();
                             corridaActual++;
                         }
+
 
                         void llegaCamion(int camionesEnEspera)
                         {
@@ -1577,9 +1617,42 @@ namespace programaNumerosAleatoriosV2
                         }
                         break;
                 }
-            } 
+            }
 
-            teoriaDeColas(3, 10); 
+            //metodo que calcula promedios
+            /* double promedios(double sumatoria, int cantidadDatos)
+            {
+                double promedio = (double)sumatoria / cantidadDatos;
+                return promedio;
+            } */
+
+            //generador de variables aleatorias con Poisson
+            void generadorPoisson(int lambda)
+            {
+                Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
+                log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
+                int N = 0;
+                double T = 1;
+                double TAux = T;
+                for(int i = 0; TAux >= Math.Exp(-lambda); i++)
+                {
+                    //generamos el numero aleatorio
+                    //Paso 1
+                    Console.WriteLine("Ri = "+listRi[i]);
+                    log.WriteLine("Ri = " + listRi[i]);
+                    TAux = T * listRi[i];
+                    //Paso 2
+                    N++;
+                    T = TAux;
+                }
+                Console.WriteLine("Variable aleatoria Pi = " + N);
+                log.WriteLine("Variable aleatoria Pi = " + N);
+            }
+
+            dados(500);
+            teoriaDeColas(3, 10);
+            //Console.WriteLine(generadorPoisson(17));
+            generadorPoisson(17);
         }
 
         //metodo para crear el archivo csv
@@ -1589,12 +1662,12 @@ namespace programaNumerosAleatoriosV2
             String separador = ",";
             StringBuilder salida = new StringBuilder();
 
-            String cadena = nombre + "," + apellido + ","  + pais;
+            String cadena = nombre + "," + apellido + "," + pais;
             List<String> lista = new List<string>();
             lista.Add(cadena);
 
-            for (int i = 0; i < lista.Count ; i++)
-            salida.AppendLine(string.Join(separador, lista[i]));
+            for (int i = 0; i < lista.Count; i++)
+                salida.AppendLine(string.Join(separador, lista[i]));
 
             // CREA Y ESCRIBE EL ARCHIVO CSV
             //File.WriteAllText(ruta, salida.ToString());
