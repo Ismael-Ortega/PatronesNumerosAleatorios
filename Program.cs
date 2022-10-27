@@ -136,7 +136,7 @@ namespace programaNumerosAleatoriosV2
 
             if (promedioRi > li && promedioRi < ls)
             {
-                log.WriteLine("El promedio esta dentro del intervalo "+li+" < "+promedioRi+" < "+ls);
+                log.WriteLine("El promedio esta dentro del intervalo " + li + " < " + promedioRi + " < " + ls);
                 log.WriteLine("Li: " + li + " Ls: " + ls);
                 log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de medias\n");
                 //Console.WriteLine("El promedio esta dentro del intervalo " + li + " < " + promedioRi + " < " + ls);
@@ -171,7 +171,7 @@ namespace programaNumerosAleatoriosV2
 
             if (varianzaRi > liVarianza && varianzaRi < lsVarianza)
             {
-                log.WriteLine("La varianza esta dentro del intervalo "+liVarianza+" < "+varianzaRi+" < "+lsVarianza);
+                log.WriteLine("La varianza esta dentro del intervalo " + liVarianza + " < " + varianzaRi + " < " + lsVarianza);
                 log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de varianza\n");
             }
             /**********PRUEBA DE UNIFORMIDAD**************/
@@ -264,7 +264,7 @@ namespace programaNumerosAleatoriosV2
             Console.WriteLine("PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA");
             log.WriteLine("4.- PRUEBA DE INDEPENDENCIA");
             log.WriteLine("PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA");
-            
+
             //revisamos los numeros Ri
             List<double> listaConjuntoS = new List<double>();
             for (int i = 0; i < listRi.Count; i++)
@@ -376,7 +376,7 @@ namespace programaNumerosAleatoriosV2
             {
                 log.WriteLine("/*********PRUEBA DE DADOS***********/");
                 Console.WriteLine("\n/*********PRUEBA DE DADOS***********/");
-                
+
                 //int cantidadCorridas = 500;
                 for (int ordenCorrida = 0; ordenCorrida < cantidadCorridas; ordenCorrida += 50)
                 {
@@ -511,7 +511,7 @@ namespace programaNumerosAleatoriosV2
                     double desviacionEstandarRangos = Math.Sqrt(varianzaRangos);
                     //Console.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
                     log.WriteLine("La desviacion estandar de los numeros en el rango de " + (rangoInf) + " a " + (rangoSup) + " es: " + desviacionEstandarRangos);
-                
+
                 }
 
             }
@@ -1627,32 +1627,68 @@ namespace programaNumerosAleatoriosV2
             } */
 
             //generador de variables aleatorias con Poisson
-            void generadorPoisson(int lambda)
+            void generadorPoisson(int lambda, int nVariablesAleatorias)
             {
-                Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
-                log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
-                int N = 0;
-                double T = 1;
-                double TAux = T;
-                for(int i = 0; TAux >= Math.Exp(-lambda); i++)
+                for (int j = 0; j < nVariablesAleatorias; j++)
                 {
-                    //generamos el numero aleatorio
-                    //Paso 1
-                    Console.WriteLine("Ri = "+listRi[i]);
-                    log.WriteLine("Ri = " + listRi[i]);
-                    TAux = T * listRi[i];
-                    //Paso 2
-                    N++;
-                    T = TAux;
+                    Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
+                    log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
+                    int N = 0;
+                    double T = 1;
+                    double TAux = T;
+                    for (int i = 0; TAux >= Math.Exp(-lambda); i++)
+                    {
+                        //generamos el numero aleatorio
+                        //Paso 1
+                        //Console.WriteLine("Ri = "+listRi[i]);
+                        log.WriteLine("Ri = " + listRi[i]);
+                        TAux = T * listRi[i];
+                        //Paso 2
+                        N++;
+                        T = TAux;
+                    }
+                    Console.WriteLine("Variable aleatoria Pi = " + N);
+                    log.WriteLine("Variable aleatoria Pi = " + N);
                 }
-                Console.WriteLine("Variable aleatoria Pi = " + N);
-                log.WriteLine("Variable aleatoria Pi = " + N);
+
+            }
+
+            //generador de variables aleatorias con distribucion normal
+            void generadorNormal(double desviacionStd, double miu, int nVariablesAleatorias)
+            {
+                int contIndexRi = 0;
+                Console.WriteLine("\n/************Generador de variables aleatorias con distribucion normal************/");
+                log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion normal*****/");
+                for (int i = 0; i < nVariablesAleatorias; i++)
+                {
+                    //sumamos 12 variables aleatorias
+                    double sumatoria = 0;
+
+
+                    for (int j = contIndexRi; j < contIndexRi + 12; j++)
+                    {
+                        //Console.WriteLine("Indice Ri = " + j);
+                        sumatoria = sumatoria + listRi[j];
+                    }
+                    contIndexRi = contIndexRi + 12;
+
+                    //le restamos 6
+                    sumatoria = sumatoria - 6;
+                    //multiplicamos por la desviacion estandar
+                    sumatoria = sumatoria * desviacionStd;
+                    //le sumamos el miu
+                    sumatoria = sumatoria + miu;
+                    //Mostramos la variable aleatoria
+                    Console.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
+                    log.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
+                }
             }
 
             dados(500);
             teoriaDeColas(3, 10);
             //Console.WriteLine(generadorPoisson(17));
             generadorPoisson(17);
+            generadorNormal(6.5, 10, 5);
         }
 
         //metodo para crear el archivo csv

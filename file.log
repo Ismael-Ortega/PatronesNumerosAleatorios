@@ -16796,3 +16796,10 @@ Ri = 0.6210474911488219
 Ri = 0.8792577218898792
 Ri = 0.6281284336466854
 Variable aleatoria Pi = 14
+
+	/*********Generador de variables aleatorias con distribucion normal*****/
+Variable aleatoria N1 = 14.54230252716396
+Variable aleatoria N2 = 10.161884995727018
+Variable aleatoria N3 = 1.1090220974240044
+Variable aleatoria N4 = 3.6356977170064777
+Variable aleatoria N5 = 7.99072152362349
