@@ -1629,14 +1629,16 @@ namespace programaNumerosAleatoriosV2
             //generador de variables aleatorias con Poisson
             void generadorPoisson(int lambda, int nVariablesAleatorias)
             {
+                int contIndexRi = 0;
+                Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
+                log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
                 for (int j = 0; j < nVariablesAleatorias; j++)
                 {
-                    Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
-                    log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
+                    
                     int N = 0;
                     double T = 1;
                     double TAux = T;
-                    for (int i = 0; TAux >= Math.Exp(-lambda); i++)
+                    for (int i = contIndexRi; TAux >= Math.Exp(-lambda); i++)
                     {
                         //generamos el numero aleatorio
                         //Paso 1
@@ -1647,6 +1649,9 @@ namespace programaNumerosAleatoriosV2
                         N++;
                         T = TAux;
                     }
+                    //cuando generamos los numeros aumentamos el contador para no usar los mismos numeros aleatorios
+                    contIndexRi++;
+
                     Console.WriteLine("Variable aleatoria Pi = " + N);
                     log.WriteLine("Variable aleatoria Pi = " + N);
                 }
