@@ -16,13 +16,15 @@ namespace programaNumerosAleatoriosV2
             //Lista que genera los valores de ri
             List<double> listRi = new List<double>();
 
+            List<double> listVariablesAleatoriasNormales = new List<double>();
+
             //variables a crear nuestro archivo de registro
             StreamWriter log;
             log = new StreamWriter("C:/Users/ormoj/Documents/Semestre 5/Simulacion/programaNumerosAleatoriosV2/file.log");
             log.AutoFlush = true;
 
             //algoritmo lineal para generar los numeros aleatorios
-
+            //x0 = 6, k = 15, g = 13, c = 8191
             float x0 = 6;
             double xi = 0;
             float k = 15;
@@ -174,89 +176,95 @@ namespace programaNumerosAleatoriosV2
                 log.WriteLine("La varianza esta dentro del intervalo " + liVarianza + " < " + varianzaRi + " < " + lsVarianza);
                 log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de varianza\n");
             }
-            /**********PRUEBA DE UNIFORMIDAD**************/
-            Console.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
-            Console.WriteLine("PRUEBA DE CHI CUADRADA");
-            log.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
-            log.WriteLine("PRUEBA DE CHI CUADRADA");
-            /**********PRUEBA DE CHI CUADRADA ************/
-            /***** Clasificamos los numeros aleatorios*********/
-            //obtenemos m2
-            double n = m;
-            double m2 = Math.Ceiling(Math.Sqrt(n));
-            log.Write("m2 vale: " + m2 + "\n");
-
-            //obtenemos el ancho de clase
-            double anchoClase = Math.Round(1 / m2, 4);
-            log.Write("El ancho de clase es: " + anchoClase + "\n");
-
-            //ahora clasificamos los numeros aleatorios por rango de valores
-            //creamos una lista de listas
-            List<List<double>> listaFrecuenciaObservada = new List<List<double>>();
-            //creamos una lista auxiliar
-            List<double> listaAux = new List<double>();
-
-
-            //clasificamos los numeros m2 veces
-            for (int i = 0; i < m2; i++)
+            void pruebaDeUniformidad()
             {
-                for (int j = 0; j < listRi.Count; j++)
+                /**********PRUEBA DE UNIFORMIDAD**************/
+                Console.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
+                Console.WriteLine("PRUEBA DE CHI CUADRADA");
+                log.WriteLine("3.- PRUEBA DE UNIFORMIDAD");
+                log.WriteLine("PRUEBA DE CHI CUADRADA");
+                /**********PRUEBA DE CHI CUADRADA ************/
+                /***** Clasificamos los numeros aleatorios*********/
+                //obtenemos m2
+                double n = m;
+                double m2 = Math.Ceiling(Math.Sqrt(n));
+                log.Write("m2 vale: " + m2 + "\n");
+
+                //obtenemos el ancho de clase
+                double anchoClase = Math.Round(1 / m2, 4);
+                log.Write("El ancho de clase es: " + anchoClase + "\n");
+
+                //ahora clasificamos los numeros aleatorios por rango de valores
+                //creamos una lista de listas
+                List<List<double>> listaFrecuenciaObservada = new List<List<double>>();
+                //creamos una lista auxiliar
+                List<double> listaAux = new List<double>();
+
+
+                //clasificamos los numeros m2 veces
+                for (int i = 0; i < m2; i++)
                 {
-                    if (listRi.ElementAt(j) >= (i * anchoClase) && listRi.ElementAt(j) < ((i + 1) * anchoClase))
+                    for (int j = 0; j < listRi.Count; j++)
                     {
-                        listaAux.Add(listRi.ElementAt(j));
+                        if (listRi.ElementAt(j) >= (i * anchoClase) && listRi.ElementAt(j) < ((i + 1) * anchoClase))
+                        {
+                            listaAux.Add(listRi.ElementAt(j));
+                        }
                     }
+                    listaFrecuenciaObservada.Add(listaAux);
+                    listaAux = new List<double>();
                 }
-                listaFrecuenciaObservada.Add(listaAux);
+                //borramos la lista auxiliar puesto que ya no se usara
                 listaAux = new List<double>();
+
+                //mostramos el numero de valores en cada lista
+                /* Console.Write("El numero de valores en cada lista es: \n");
+                for (int i = 0; i < listaFrecuenciaObservada.Count; i++)
+                {
+                    Console.Write("Lista " + i + " con rango de " + i * anchoClase + " al " + (i + 1) * anchoClase + " tiene " + listaFrecuenciaObservada.ElementAt(i).Count + " valores\n");
+                } */
+
+                //calculamos la frecuencia esperada
+                double frecuenciaEsperada = m / m2;
+
+                //creamos una lista para guardar los valores de la ecuacion
+                List<double> listaEcuacionChiCuadrada = new List<double>();
+                double valorEcuacion = 0;
+                //calculamos los valores de la ecuacion
+                for (int i = 0; i < listaFrecuenciaObservada.Count; i++)
+                {
+                    valorEcuacion = Math.Pow((listaFrecuenciaObservada.ElementAt(i).Count - frecuenciaEsperada), 2) / frecuenciaEsperada;
+                    listaEcuacionChiCuadrada.Add(valorEcuacion);
+                }
+
+                //sumamos los valores de la ecuacion
+                double sumaEcuacion = 0;
+                foreach (double item in listaEcuacionChiCuadrada)
+                {
+                    sumaEcuacion += item;
+
+                }
+
+                //calculamos el valor de chi cuadrada
+                gradosDeLibertad = m2 - 1;
+                chiCuadrada = 0.5 * Math.Pow(1.96 + Math.Sqrt(2 * gradosDeLibertad - 1), 2);
+
+                //si el valor de chi cuadrada es mayor que el valor de la sumatoria de la ecuacion
+                //entonces se acepta la hipotesis nula
+                if (chiCuadrada > sumaEcuacion)
+                {
+                    log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es mayor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
+                    log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de uniformidad\n");
+                }
+                else
+                {
+                    log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es menor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
+                    log.WriteLine("Se rechaza la hipotesis nula\n");
+                }
             }
-            //borramos la lista auxiliar puesto que ya no se usara
-            listaAux = new List<double>();
+            //llamamos al metodo
+            pruebaDeUniformidad();
 
-            //mostramos el numero de valores en cada lista
-            /* Console.Write("El numero de valores en cada lista es: \n");
-            for (int i = 0; i < listaFrecuenciaObservada.Count; i++)
-            {
-                Console.Write("Lista " + i + " con rango de " + i * anchoClase + " al " + (i + 1) * anchoClase + " tiene " + listaFrecuenciaObservada.ElementAt(i).Count + " valores\n");
-            } */
-
-            //calculamos la frecuencia esperada
-            double frecuenciaEsperada = m / m2;
-
-            //creamos una lista para guardar los valores de la ecuacion
-            List<double> listaEcuacionChiCuadrada = new List<double>();
-            double valorEcuacion = 0;
-            //calculamos los valores de la ecuacion
-            for (int i = 0; i < listaFrecuenciaObservada.Count; i++)
-            {
-                valorEcuacion = Math.Pow((listaFrecuenciaObservada.ElementAt(i).Count - frecuenciaEsperada), 2) / frecuenciaEsperada;
-                listaEcuacionChiCuadrada.Add(valorEcuacion);
-            }
-
-            //sumamos los valores de la ecuacion
-            double sumaEcuacion = 0;
-            foreach (double item in listaEcuacionChiCuadrada)
-            {
-                sumaEcuacion += item;
-
-            }
-
-            //calculamos el valor de chi cuadrada
-            gradosDeLibertad = m2 - 1;
-            chiCuadrada = 0.5 * Math.Pow(1.96 + Math.Sqrt(2 * gradosDeLibertad - 1), 2);
-
-            //si el valor de chi cuadrada es mayor que el valor de la sumatoria de la ecuacion
-            //entonces se acepta la hipotesis nula
-            if (chiCuadrada > sumaEcuacion)
-            {
-                log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es mayor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
-                log.WriteLine("Se acepta la hipotesis nula (H0) en la prueba de uniformidad\n");
-            }
-            else
-            {
-                log.WriteLine("El valor de chi cuadrada (" + chiCuadrada + ") es menor que el valor de la sumatoria de la ecuacion (" + sumaEcuacion + ")");
-                log.WriteLine("Se rechaza la hipotesis nula\n");
-            }
             /***** PRUEBAS DE INDEPENDENCIA******/
 
             /**PRUEBA DE CORRIDAS ARRIBA Y ABAJO DE LA MEDIA *******/
@@ -1632,9 +1640,11 @@ namespace programaNumerosAleatoriosV2
                 int contIndexRi = 0;
                 Console.WriteLine("\n/************Generador de variables aleatorias con distribucion Poisson************/");
                 log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion Poisson*****/");
+                //creamos una lista que contenga las variables aleatorias generadas por el metodo de Poisson
+                List<double> listVariablesAleatoriasPoisson = new List<double>();
                 for (int j = 0; j < nVariablesAleatorias; j++)
                 {
-                    
+
                     int N = 0;
                     double T = 1;
                     double TAux = T;
@@ -1643,17 +1653,20 @@ namespace programaNumerosAleatoriosV2
                         //generamos el numero aleatorio
                         //Paso 1
                         //Console.WriteLine("Ri = "+listRi[i]);
-                        log.WriteLine("Ri = " + listRi[i]);
+                        //log.WriteLine("Ri = " + listRi[i]);
                         TAux = T * listRi[i];
                         //Paso 2
                         N++;
                         T = TAux;
-                    }
-                    //cuando generamos los numeros aumentamos el contador para no usar los mismos numeros aleatorios
-                    contIndexRi++;
 
-                    Console.WriteLine("Variable aleatoria Pi = " + N);
-                    log.WriteLine("Variable aleatoria Pi = " + N);
+                        //cuando generamos los numeros aumentamos el contador para no usar los mismos numeros aleatorios
+                        contIndexRi++;
+                    }
+
+
+                    //Console.WriteLine("Variable aleatoria Pi = " + N);
+                    log.WriteLine("Variable aleatoria P" + (j + 1) + " = " + N);
+                    listVariablesAleatoriasPoisson.Add(N);
                 }
 
             }
@@ -1664,6 +1677,9 @@ namespace programaNumerosAleatoriosV2
                 int contIndexRi = 0;
                 Console.WriteLine("\n/************Generador de variables aleatorias con distribucion normal************/");
                 log.WriteLine("\n\t/*********Generador de variables aleatorias con distribucion normal*****/");
+                //creamos una lista para guardar las variables aleatorias normales
+
+
                 for (int i = 0; i < nVariablesAleatorias; i++)
                 {
                     //sumamos 12 variables aleatorias
@@ -1675,7 +1691,6 @@ namespace programaNumerosAleatoriosV2
                         //Console.WriteLine("Indice Ri = " + j);
                         sumatoria = sumatoria + listRi[j];
                     }
-                    contIndexRi = contIndexRi + 12;
 
                     //le restamos 6
                     sumatoria = sumatoria - 6;
@@ -1683,38 +1698,160 @@ namespace programaNumerosAleatoriosV2
                     sumatoria = sumatoria * desviacionStd;
                     //le sumamos el miu
                     sumatoria = sumatoria + miu;
-                    //Mostramos la variable aleatoria
-                    Console.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
-                    log.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
+                    contIndexRi += 12;
+                    if (sumatoria > 0)
+                    {
+
+
+                        //log.WriteLine("Indice contIndex: "+contIndexRi);
+                        //Mostramos la variable aleatoria
+                        //Console.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
+                        log.WriteLine("Variable aleatoria N" + (i + 1) + " = " + sumatoria);
+                        //agregamos la variable aleatoria a la lista
+                        listVariablesAleatoriasNormales.Add(sumatoria);
+                    }
+                    else
+                    {
+
+                        //si el numero es negativo entonces regresamos el contador de numeros aleatorios
+                        i--;
+                    }
+
+
+
                 }
             }
 
+            //prueba de bondad y ajuste de chi cuadrada
+            void bondadAjuste(int numVariables, string nombreGenerador)
+            {
+                //generamos los intervalos
+                int nIntervalos = 10;
+                double[] intervaloInf = new double[nIntervalos];
+                double[] intervaloSup = new double[nIntervalos];
+                double[] frecuenciaObservada = new double[nIntervalos];
+                double[] probabilidadDePoisson = new double[nIntervalos];
+                double[] frecuenciaEsperada = new double[nIntervalos];
+                double[] error = new double[nIntervalos];
+                double sumaFrecuenciaObservada = 0;
+                double sumaprobabilidadDePoisson = 0;
+                double sumaFrecuenciaEsperada = 0;
+                double sumaError = 0;
+
+                //revisamos que generador de variables aleatorias se utilizo
+                if (nombreGenerador.Equals("Poisson"))
+                {
+                    //creamos las variables aleatorias con la distribucion de Poisson
+                    generadorPoisson(17, numVariables);
+                }
+                else
+                {
+                    //generamos las variables aleatorias con la distribucion normal
+                    generadorNormal(6.5, 10, numVariables);
+                }
+                //generamos los intervalos
+                double intervalo = (double)numVariables / nIntervalos;
+                //Console.WriteLine("Intervalo = " + intervalo);
+                double intervaloAux = 0;
+                for (int i = 0; i < nIntervalos; i++)
+                {
+                    intervaloInf[i] = intervaloAux;
+                    intervaloSup[i] = intervaloAux + intervalo;
+                    intervaloAux = intervaloSup[i];
+                }
+                //calculamos la frecuencia observada
+                for (int i = 0; i < nIntervalos; i++)
+                {
+                    for (int j = 0; j < listVariablesAleatoriasNormales.Count; j++)
+                    {
+                        if (listVariablesAleatoriasNormales[j] >= intervaloInf[i] && listVariablesAleatoriasNormales[j] < intervaloSup[i])
+                        {
+                            frecuenciaObservada[i]++;
+                        }
+                    }
+                    sumaFrecuenciaObservada += frecuenciaObservada[i];
+                }
+                //calculamos la probabilidad de poisson
+                double lambda = 17;
+
+                for (int i = 0; i < nIntervalos; i++)
+                {
+                    probabilidadDePoisson[i] = (Math.Pow(lambda, intervaloInf[i]) * Math.Exp(-lambda)) / factorial(intervaloInf[i]);
+                    
+
+                    sumaprobabilidadDePoisson += probabilidadDePoisson[i];
+                }
+                //calculamos la frecuencia esperada
+                for (int i = 0; i < nIntervalos; i++)
+                {
+                    frecuenciaEsperada[i] = probabilidadDePoisson[i] * numVariables;
+                    sumaFrecuenciaEsperada += frecuenciaEsperada[i];
+                }
+                //calculamos el error
+                for (int i = 0; i < nIntervalos; i++)
+                {
+                    error[i] = Math.Pow((frecuenciaEsperada[i] - frecuenciaObservada[i]), 2) / frecuenciaEsperada[i];
+                    Console.WriteLine("Error = " + error[i]);
+                    sumaError += error[i];
+                }
+                //comparamos el valor de chi cuadrada con el valor de la tabla
+                if (sumaError < 18.307)
+                {
+                    Console.WriteLine("No se rechaza la hipotesis nula");
+                    log.WriteLine("No se rechaza la hipotesis nula");
+                }
+                else
+                {
+                    Console.WriteLine("Se rechaza la hipotesis nula");
+                    log.WriteLine("Se rechaza la hipotesis nula");
+                    Console.WriteLine("El valor de chi cuadrada es: " + sumaError);
+                    log.WriteLine("Valor de chi cuadrada: " + sumaError);
+                }
+            }
+
+            double factorial(double numero)
+            {
+                //calculamos el factorial
+                double factorial = 1;
+                for (int i = 1; i <= numero; i++)
+                {
+                    factorial *= i;
+                }
+                return factorial;
+            }
             dados(500);
             teoriaDeColas(3, 10);
-            //Console.WriteLine(generadorPoisson(17));
-            generadorPoisson(17);
-            generadorNormal(6.5, 10, 5);
+            generadorPoisson(17, 100);
+            generadorNormal(6.5, 10, 100);
+            bondadAjuste(100, "Poisson");
         }
 
-        //metodo para crear el archivo csv
-        static void escribirCSV(String nombre, String apellido, String pais)
-        {
-            String ruta = @"C:\Users\ormoj\Documents\Semestre 5\Simulacion\pruebaArchivoLog\registroCamiones.csv";
-            String separador = ",";
-            StringBuilder salida = new StringBuilder();
-
-            String cadena = nombre + "," + apellido + "," + pais;
-            List<String> lista = new List<string>();
-            lista.Add(cadena);
-
-            for (int i = 0; i < lista.Count; i++)
-                salida.AppendLine(string.Join(separador, lista[i]));
-
-            // CREA Y ESCRIBE EL ARCHIVO CSV
-            //File.WriteAllText(ruta, salida.ToString());
-
-            // AÑADE MAS LINEAS AL ARCHIVO CSV
-            File.AppendAllText(ruta, salida.ToString());
-        }
+        /* dados(500);
+        teoriaDeColas(3, 10);
+        //Console.WriteLine(generadorPoisson(17));
+        generadorPoisson(17, 100);
+        generadorNormal(6.5, 10, 100); */
     }
+
+
+    //metodo para crear el archivo csv
+    /* static void escribirCSV(String nombre, String apellido, String pais)
+    {
+        String ruta = @"C:\Users\ormoj\Documents\Semestre 5\Simulacion\pruebaArchivoLog\registroCamiones.csv";
+        String separador = ",";
+        StringBuilder salida = new StringBuilder();
+
+        String cadena = nombre + "," + apellido + "," + pais;
+        List<String> lista = new List<string>();
+        lista.Add(cadena);
+
+        for (int i = 0; i < lista.Count; i++)
+            salida.AppendLine(string.Join(separador, lista[i]));
+
+        // CREA Y ESCRIBE EL ARCHIVO CSV
+        //File.WriteAllText(ruta, salida.ToString());
+
+        // AÑADE MAS LINEAS AL ARCHIVO CSV
+        File.AppendAllText(ruta, salida.ToString());
+    } */
 }
